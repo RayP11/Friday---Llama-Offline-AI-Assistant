@@ -4,7 +4,7 @@ Friday utilizes no outside API keys and is run completely local
 
 # Libraries
 Check the README folder for all required libraries to install. 
-Ollama is also required to be downloaded and saved
+Ollama is also required to be downloaded: https://ollama.com/download
 
 
 # Why make Friday?
@@ -18,11 +18,11 @@ Ollama is also required to be downloaded and saved
 The following features are planned to be added to Friday for optimized functionality
 
 - User interface (currently terminal)
-- online functionalities when hooked up to wifi: Spotify, Youtube, National Weather Service data
+- Online functionalities when hooked up to wifi: Spotify, Youtube, National Weather Service data
 - AI vision from llama 3.2 for increased productivity
 - Possible image generation
-- text messaging
-- alarm clock
+- Text messaging
+- Alarm clock
 
 # Instructions
 1. Install Ollama on your windows machine @ https://ollama.com/download (select download for windows)
