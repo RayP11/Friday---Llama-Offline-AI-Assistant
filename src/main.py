@@ -32,8 +32,8 @@ while True:
             print("No speech detected. Listening again...")
             continue
 
-        memory = "\n".join([f"Ray: {entry['user']} You: {entry['ai']}" for entry in conversation_history])
-        full_prompt = f"{persona}\n\n{memory}\nRay: {command}" if memory else f"{persona}\n\nRay: {command}"
+        memory = "\n".join([f"Previous Messages( Ray: {entry['user']} Friday/you: {entry['ai']})" for entry in conversation_history])
+        full_prompt = f"{persona}\n\n{memory}\ncurrent message( Ray: {command})" if memory else f"{persona}\n\nRay: {command}"
 
         data["prompt"] = full_prompt
 
