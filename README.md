@@ -3,7 +3,7 @@ This is an offline version of my previous Jarvis voice assistant.
 Friday utilizes no outside API keys and is run completely local
 
 # Libraries
-Check the Requirements folder for all required libraries to install. 
+Check the requirements.txt folder for all required libraries to install. 
 Ollama is also required to be downloaded: https://ollama.com/download
 
 
