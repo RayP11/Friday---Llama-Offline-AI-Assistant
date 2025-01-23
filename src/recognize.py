@@ -1,3 +1,7 @@
+"""
+Includes functions to recognize speech and give audio output for responses
+"""
+
 import whisper
 import pyttsx3
 import speech_recognition as sr
@@ -14,6 +18,9 @@ source = sr.Microphone()
 
 # Initialize pyttsx3 for speech output
 def speak_text(text):
+    """
+    Takes in text to speak with Sapi-5 voice for Windows machine
+    """
     engine = pyttsx3.init()
     voices = engine.getProperty('voices')
     engine.setProperty('voice', voices[1].id)  # Adjust to preferred voice
@@ -29,7 +36,7 @@ def is_valid_command(command):
     # Ensure it contains valid alphabetic characters (ignore gibberish or symbols)
     if not re.match(r"^[a-zA-Z0-9\s,.?!'-]+$", command):
         return False
-    # Ignore very short or overly long commands
+    # Ignore short or overly long commands: Needed in order to account for non-speech noise
     if len(command) < 11 or len(command) > 100:
         return False
     return True
@@ -39,7 +46,7 @@ def listen_for_command():
     Listens for audio input, processes it with Whisper, and returns the command text.
     """
     with source as s:
-        print("Listening for commands...")
+        print("\nListening for commands...")
         recognizer.adjust_for_ambient_noise(source)
         try:
             audio = recognizer.listen(source, timeout=5)  # Wait for up to 5 seconds to capture input
@@ -58,12 +65,12 @@ def listen_for_command():
             result = model.transcribe(audio_array)
 
             command = result["text"].strip().lower()
-            os.remove(temp_audio_file.name)  # Clean up the temporary file
+            os.remove(temp_audio_file.name)  # Clean up the temporary audio file
 
             if is_valid_command(command):
                 return command
             else:
-                print("Invalid command detected. Ignoring...")
+                print("No speech detected...")
                 return None
 
     except Exception as e:

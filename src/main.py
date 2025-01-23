@@ -1,3 +1,6 @@
+"""
+Main file to run Friday: A completely offline and private AI voice assistant
+"""
 from recognize import speak_text, listen_for_command
 import json
 import requests
@@ -22,7 +25,7 @@ while True:
         if command is None:
             continue
 
-        print(f"User: {command}")
+        print(f"\nUser: {command}")
         
         # Handle Silence: Detect if no speech was detected
         if not command:
@@ -40,7 +43,6 @@ while True:
             response.raise_for_status()
         except requests.exceptions.RequestException as e:
             print(f"Error with API request: {e}")
-            speak_text("There was an error with the API.")
             continue
 
         if response.status_code == 200:
@@ -60,8 +62,6 @@ while True:
 
         else:
             print(f"Error: {response.status_code}")
-            speak_text("There was an error with the API.")
 
     except Exception as e:
         print(f"Error during processing: {e}")
-        speak_text("There was an error processing the request.")
