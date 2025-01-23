@@ -28,6 +28,6 @@ The following features are planned to be added to Friday for optimized functiona
 1. Install Ollama on your windows machine @ https://ollama.com/download (select download for windows)
 2. After installation, enter: "ollama run llama3.2" into the terminal
 3. Once the model installs for the first time, enter: "ollama serve" into terminal to start a local server
-4. To test the model, enter: "ollama start llama3.2" to run the model in the terminal. (ctrl + d) to exit
+4. To run the model in the terminal, enter: "ollama run llama3.2" (ctrl + d) to exit
 5. Download the libraries in READM.md
 6. Implement code
