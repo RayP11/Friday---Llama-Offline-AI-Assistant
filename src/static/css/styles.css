@@ -1,0 +1,138 @@
+:root {
+    --background-color: #1E1E1E;
+    --text-color: #08cae4;
+    --button-bg: #05b0e4;
+    --button-bg-hover: #06b2be;
+    --time-color: #07bdf5;
+}
+
+.light-mode {
+    --background-color: #FFFFFF;
+    --text-color: #000000;
+    --button-bg: #06b9b9;
+    --button-bg-hover: #08b6a7;
+    --time-color: #08c0b7;
+}
+
+body {
+    font-family: 'Orbitron', sans-serif;
+    background-color: var(--background-color);
+    color:var(--text-color);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+    overflow: auto;
+    position: relative;
+}
+
+.menu-icon {
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.line {
+    width: 30px;
+    height: 4px;
+    background-color: #EAEAEA;
+    margin: 3px 0;
+    transition: all 0.3s ease;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 50px;
+    width: 200px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 1;
+    padding: 10px;
+}
+
+.dropdown-content button {
+    width: 100%;
+    padding: 10px;
+    background-color: transparent;
+    border: none;
+    color: var(--text-color);
+    text-align: left;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+
+.dropdown-content button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 55px;
+    color: var(--weather-color);
+}
+
+#responseContainer {
+    display: block;  
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 600px;
+    max-height: 300px;
+    overflow-y: auto;
+    text-align: left;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+    font-size: 18px;
+}
+
+#dateDisplay, #timeDisplay {
+    position: absolute;
+    right: 20px;
+    color: var(--time-color);
+}
+
+#dateDisplay {
+    top: 10px;
+    font-size: 40px;
+}
+
+#timeDisplay {
+    top: 65px;
+    font-size: 40px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: var(--button-bg);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #FFFFFF;
+    transition: background-color 0.3s, transform 0.2s;
+    margin: 5px;
+}
+
+button:hover {
+    background-color: var(--button-bg-hover);
+    transform: scale(1.05);
+}
+
+#generatedImage {
+    display: none;
+    max-width: 70%;
+    height: 70%;
+    margin-top: 20px;
+}
