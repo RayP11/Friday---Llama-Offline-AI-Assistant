@@ -1,21 +1,67 @@
 from recognize import speak_text, listen_for_command
 import json
-import requests
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, jsonify, Response
 import threading
 import time
 import webbrowser
+from spotify_function import play_music
+from langchain.prompts import PromptTemplate
+from langchain_ollama import ChatOllama  # Use ChatOllama for better integration
+from langchain.memory import ConversationBufferMemory
+from langchain.schema.output_parser import StrOutputParser
+from langchain.schema.runnable import RunnablePassthrough
+from langchain.schema.messages import HumanMessage, AIMessage  # Import message types
 
 # Initialize memory and persona
 conversation_history = []
 persona = """Your name is Friday, you are my personal AI assistant. I am Ray, your creator.
-You will mimic human behavior through your speech as best as possible. Keep your responses brief like a human, throw in some sarcasm."""
+You will mimic human behavior through your speech as best as possible. Keep your responses brief and friendly, throw in a bit of sarcasm.
+You have the ability to play music on spotify when connected to wifi, when I tell you to play music just give me the name of the song and only the song name as your response, don't say the artist name either.
+My music preferences include, classic rock, rap, and alternative. 
+Your goal is to assist me with whatever I need"""
 
-url = "http://localhost:11434/api/generate"
+# Initialize ChatOllama with the llama3.2 model
+model = ChatOllama(model="llama3.2")
 
-data = {
-    "model": "llama3.2",
-}
+# Initialize conversation memory
+memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+
+# Define the prompt template
+prompt_template = PromptTemplate.from_template(
+    """
+    <s> [INST] 
+    {persona}
+    Chat History: {chat_history}
+    Current Message: {command}
+    [/INST] </s>
+    """
+)
+
+# Helper function to format chat history
+def format_chat_history(chat_history):
+    formatted_history = []
+    for message in chat_history:
+        if isinstance(message, HumanMessage):
+            formatted_history.append(f"User: {message.content}")
+        elif isinstance(message, AIMessage):
+            formatted_history.append(f"Friday: {message.content}")
+    return "\n".join(formatted_history)
+
+# Initialize Chain
+chain = (
+    {
+        "persona": RunnablePassthrough(),
+        "chat_history": lambda _: format_chat_history(memory.load_memory_variables({})["chat_history"]),
+        "command": RunnablePassthrough(),
+    }
+    | prompt_template
+    | model
+    | StrOutputParser()
+)
+
+class FridayState:
+    ACTIVE = "active"
+    SLEEP = "sleep"
 
 # Flask app setup
 app = Flask(__name__)
@@ -55,6 +101,8 @@ def chat():
     """
     Handles microphone input, speech, and AI responses
     """
+    state = FridayState.ACTIVE
+    wake_word = "friday"
     while True:
         try:
             # Listen for audio input
@@ -69,38 +117,36 @@ def chat():
             if not command:
                 print("No speech detected. Listening again...")
                 continue
+            if state == FridayState.SLEEP and wake_word in command.lower():
+                state = FridayState.ACTIVE
+            if state == FridayState.ACTIVE:
+                # Generate response using the chain
+                ai_response = chain.invoke({
+                    "persona": persona,
+                    "command": command,
+                })
 
-            memory = "\n".join([f"Previous Messages( Ray: {entry['user']} Friday/you: {entry['ai']})" for entry in conversation_history])
-            full_prompt = f"{persona}\n\n{memory}\ncurrent message( Ray: {command})" if memory else f"{persona}\n\nRay: {command}"
-
-            data["prompt"] = full_prompt
-
-            try:
-                # API request to your local server
-                response = requests.post(url, json=data, stream=True)
-                response.raise_for_status()
-            except requests.exceptions.RequestException as e:
-                print(f"Error with API request: {e}")
-                continue
-
-            if response.status_code == 200:
-                ai_response = ""
-                for chunk in response.iter_lines():
-                    if chunk:
-                        decoded_chunk = chunk.decode("utf-8")
-                        output = json.loads(decoded_chunk)
-                        ai_response += output["response"]
-                        print(output["response"], end="", flush=True)
-                
+                # Update conversation history
                 conversation_history.append({
                     "user": command,
                     "ai": ai_response,
                 })
-                speak_text(ai_response)
 
-            else:
-                print(f"Error: {response.status_code}")
+                # Update memory
+                memory.chat_memory.add_user_message(command)
+                memory.chat_memory.add_ai_message(ai_response)
 
+                if "music" in command.lower():
+                    play_music(ai_response)
+                    state = FridayState.SLEEP
+                elif "play" in command.lower():
+                    play_music(command)
+                    state = FridayState.SLEEP
+                elif "that's all" in command.lower():
+                    speak_text(ai_response)
+                    state = FridayState.SLEEP
+                else:
+                    speak_text(ai_response)
         except Exception as e:
             print(f"Error during processing: {e}")
 
