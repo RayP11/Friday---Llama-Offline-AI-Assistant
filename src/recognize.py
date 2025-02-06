@@ -33,9 +33,9 @@ def is_valid_command(command):
     """
     Validates the transcription to ensure no background noise is recognized.
     """
-    # Ensure it contains valid alphabetic characters (ignore gibberish or symbols)
-    if not re.match(r"^[a-zA-Z0-9\s,.?!'-]+$", command):
-        return False
+    # # Ensure it contains valid alphabetic characters (ignore gibberish or symbols)
+    # if not re.match(r"^[a-zA-Z0-9\s,.!'-]$", command):
+    #     return False
     # Ignore short or overly long commands: Needed in order to account for non-speech noise
     if len(command) < 11 or len(command) > 100:
         return False
