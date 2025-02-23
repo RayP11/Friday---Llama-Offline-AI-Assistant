@@ -32,10 +32,8 @@ Ollama is also required to be downloaded: https://ollama.com/download
 # Next Steps
 The following features are planned to be added to Friday for optimized functionality
 
-- Online functionalities when hooked up to wifi: Spotify, Youtube, National Weather Service data
 - AI vision from llama 3.2 for increased productivity
 - Possible image generation
-- Text messaging
 - Alarm clock
 
 # Instructions
