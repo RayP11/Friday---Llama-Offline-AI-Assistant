@@ -1,6 +1,6 @@
 # FRIDAY - The Revolutionary Offline Voice Assistant
 
-![alt text](Friday_Image.png)
+![Friday Image.png](<Friday Image.png>)
 
 Welcome to **FRIDAY**, the next-generation offline voice assistant that redefines personal AI interaction. Built as an evolution of the previous Jarvis voice assistant, FRIDAY is designed to operate entirely offline, ensuring privacy, speed, and reliability without relying on external APIs or cloud services. 
 
@@ -35,11 +35,12 @@ FRIDAY is not just another voice assistant—it’s a leap forward in AI technol
 ---
 
 ## **See FRIDAY in Action**
+![alt text](<Friday Introduction.gif>)
 
 ### **Weather Query Example**
 Ask FRIDAY, *"What’s today’s forecast?"* and get instant, detailed weather updates.
 
-![alt text](Friday_Weather_Report.gif)
+![alt text](<Friday Weather_Report.gif>)
 
 ---
 
@@ -105,5 +106,3 @@ FRIDAY is more than just a voice assistant—it’s a step toward a future where
 - The open source community
 
 ---
-
-![alt text](Friday_Introduction.gif)
