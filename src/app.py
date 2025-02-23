@@ -6,19 +6,18 @@ import time
 import webbrowser
 from spotify_function import play_music
 from langchain.prompts import PromptTemplate
-from langchain_ollama import ChatOllama  # Use ChatOllama for better integration
+from langchain_ollama import ChatOllama
 from langchain.memory import ConversationBufferMemory
 from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnablePassthrough
-from langchain.schema.messages import HumanMessage, AIMessage  # Import message types
+from langchain.schema.messages import HumanMessage, AIMessage
+from get_weather import get_weather
+from text_messages import send_reminder, send_message
+from prompts import persona, weather_prompt, sophie_message, reminder, music_prompt
+from commands import user_music, friday_music, weather_info, reminder_send, start_sleep, message_send, find_match
 
 # Initialize memory and persona
 conversation_history = []
-persona = """Your name is Friday, you are my personal AI assistant. I am Ray, your creator.
-You will mimic human behavior through your speech as best as possible. Keep your responses brief and friendly, throw in a bit of sarcasm.
-You have the ability to play music on spotify when connected to wifi, when I tell you to play music (ex. "play back in black" or "play me a song") just give me the name of the song and only the song name as your response, don't say the artist name either.
-My music preferences include, classic rock, rap, and alternative. 
-Your goal is to assist me with whatever I need"""
 
 # Initialize ChatOllama with the llama3.2 model
 model = ChatOllama(model="llama3.2")
@@ -29,11 +28,9 @@ memory = ConversationBufferMemory(memory_key="chat_history", return_messages=Tru
 # Define the prompt template
 prompt_template = PromptTemplate.from_template(
     """
-    <s> [INST] 
     {persona}
     Chat History: {chat_history}
     Current Message: {command}
-    [/INST] </s>
     """
 )
 
@@ -97,6 +94,44 @@ def stream():
 
     return Response(generate(), content_type='text/event-stream')
 
+def update_history(user, ai):
+    # Update conversation history
+                conversation_history.append({
+                    "user": user,
+                    "ai": ai,
+                })
+
+def ai_response(text):
+    # Generate response using the chain
+    ai_response = chain.invoke({
+        "persona": persona,
+        "command": text,
+    })
+
+    # Clean up the response to remove unnecessary details
+    ai_response = ai_response.strip()
+
+    update_history(text, ai_response)
+
+    # Update memory
+    memory.chat_memory.add_user_message(text)
+    memory.chat_memory.add_ai_message(ai_response)
+    speak_text(ai_response)
+    return ai_response
+
+def separate_response(text):
+    """Same as AI_Response but with no memory added. Used for function responses not needing to be stored"""
+    
+    ai_response = chain.invoke({
+        "persona": persona,
+        "command": text,
+    })
+    ai_response = ai_response.strip()
+
+    update_history(text, ai_response)
+
+    return ai_response
+
 def chat():
     """
     Handles microphone input, speech, and AI responses
@@ -120,33 +155,40 @@ def chat():
             if state == FridayState.SLEEP and wake_word in command.lower():
                 state = FridayState.ACTIVE
             if state == FridayState.ACTIVE:
-                # Generate response using the chain
-                ai_response = chain.invoke({
-                    "persona": persona,
-                    "command": command,
-                })
 
-                # Update conversation history
-                conversation_history.append({
-                    "user": command,
-                    "ai": ai_response,
-                })
-
-                # Update memory
-                memory.chat_memory.add_user_message(command)
-                memory.chat_memory.add_ai_message(ai_response)
-
-                if "music" in command.lower():
-                    play_music(ai_response)
+                if find_match(friday_music, command):
+                    ai_song = separate_response(music_prompt)
+                    response = play_music(ai_song)
+                    update_history(command, response)
                     state = FridayState.SLEEP
-                elif "play" in command.lower():
-                    play_music(command)
+                elif find_match(user_music, command):
+                    response = play_music(command)
+                    update_history(command, response)
                     state = FridayState.SLEEP
-                elif "that's all" in command.lower():
-                    speak_text(ai_response)
-                    state = FridayState.SLEEP
+                elif find_match(weather_info, command):
+                    weather_data = get_weather()
+                    command = weather_prompt + command
+                    has_forecast = False
+                    for message in conversation_history:
+                         if weather_data in message:
+                              has_forecast = True
+                              break
+                    if has_forecast:
+                         ai_response(command)
+                    else:
+                         ai_response(command + weather_data)
+                elif find_match(reminder_send, command):
+                     message = separate_response(reminder + command)
+                     speak_text(message)
+                     send_reminder(message)
+                elif find_match(message_send, command):
+                    message = separate_response(sophie_message + command)
+                    speak_text(message)
+                    send_message(message)
+                elif find_match(start_sleep, command):
+                    ai_response(command)
                 else:
-                    speak_text(ai_response)
+                    ai_response(command)
         except Exception as e:
             print(f"Error during processing: {e}")
 

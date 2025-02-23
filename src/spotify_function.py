@@ -130,4 +130,4 @@ def play_music(music):
         return
 
 if(__name__ == "__main__"):
-    play_music("Mr. Brightside")
+    play_music("Friday play Mr. Brightside")
