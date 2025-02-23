@@ -2,7 +2,7 @@
 This is an offline version of my previous Jarvis voice assistant. 
 Friday utilizes no outside API keys and is run completely local
 
-<video controls src="Friday Introduction.mp4" title="Title"></video>
+![alt text](<Friday Introduction.gif>)
 
 # UPDATE
 Added online functions when connected to the wifi
@@ -13,7 +13,7 @@ Added online functions when connected to the wifi
 
 # Weather Example
 Response to query "What's today's forecast?"
-<video controls src="Friday Weather_Report.mp4" title="Title"></video>
+![alt text](<Friday Weather_Report.gif>)
 
 # Libraries
 Check the requirements.txt folder for all required libraries to install. 
