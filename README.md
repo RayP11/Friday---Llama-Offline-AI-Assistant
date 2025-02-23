@@ -1,4 +1,4 @@
-# FRIDAY - The Revolutionary Offline Voice Assistant
+# FRIDAY - The Next Generation for AI Voice Assistants
 
 ![Friday Image.png](<Friday Image.png>)
 
