@@ -2,6 +2,19 @@
 This is an offline version of my previous Jarvis voice assistant. 
 Friday utilizes no outside API keys and is run completely local
 
+<video controls src="Friday Introduction.mp4" title="Title"></video>
+
+# UPDATE
+Added online functions when connected to the wifi
+- Spotify functions (can play any desired song or pick a song and play it)
+- Gets weather data from the National Weather Service
+- Sends reminders to my phone via text messages
+- Sends text messages to others
+
+# Weather Example
+Response to query "What's today's forecast?"
+<video controls src="Friday Weather_Report.mp4" title="Title"></video>
+
 # Libraries
 Check the requirements.txt folder for all required libraries to install. 
 Ollama is also required to be downloaded: https://ollama.com/download
