@@ -1,4 +1,5 @@
 # FRIDAY - Offline Voice Assistant
+![alt text](<Friday Image.png>)
 This is an offline version of my previous Jarvis voice assistant. 
 Friday utilizes no outside API keys and is run completely local
 
