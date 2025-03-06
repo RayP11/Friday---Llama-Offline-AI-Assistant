@@ -4,6 +4,8 @@ from flask import Flask, render_template, jsonify, Response
 import threading
 import time
 import webbrowser
+import re
+import socket
 from spotify_function import play_music
 from langchain.prompts import PromptTemplate
 from langchain_ollama import ChatOllama
@@ -20,7 +22,11 @@ from commands import user_music, friday_music, weather_info, reminder_send, star
 conversation_history = []
 
 # Initialize ChatOllama with the llama3.2 model
-model = ChatOllama(model="llama3.2")
+#model = ChatOllama(model="llama3.2")
+
+#OR
+# Initialize ChatOllama with the gemma2 model
+model = ChatOllama(model="gemma2:2b")
 
 # Initialize conversation memory
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
@@ -94,6 +100,14 @@ def stream():
 
     return Response(generate(), content_type='text/event-stream')
 
+def check_internet_connection():
+    try:
+        # Connect to a well-known host (Google DNS) to check for internet connection
+        socket.create_connection(("8.8.8.8", 53), timeout=3)
+        return True
+    except OSError:
+        return False
+
 def update_history(user, ai):
     # Update conversation history
                 conversation_history.append({
@@ -103,21 +117,30 @@ def update_history(user, ai):
 
 def ai_response(text):
     # Generate response using the chain
-    ai_response = chain.invoke({
+    ai_response_text = chain.invoke({
         "persona": persona,
         "command": text,
     })
 
     # Clean up the response to remove unnecessary details
-    ai_response = ai_response.strip()
+    ai_response_text = ai_response_text.strip()
 
-    update_history(text, ai_response)
+    update_history(text, ai_response_text)
 
     # Update memory
     memory.chat_memory.add_user_message(text)
-    memory.chat_memory.add_ai_message(ai_response)
-    speak_text(ai_response)
-    return ai_response
+    memory.chat_memory.add_ai_message(ai_response_text)
+    
+    # Speak the response
+    speak_text(ai_response_text)
+
+    # Check if the response contains a song mention
+    song_mention = re.search(r"playing (.+)", ai_response_text)
+    if song_mention:
+        song_title = song_mention.group(1)
+        play_music(song_title)
+
+    return ai_response_text
 
 def separate_response(text):
     """Same as AI_Response but with no memory added. Used for function responses not needing to be stored"""
@@ -155,7 +178,6 @@ def chat():
             if state == FridayState.SLEEP and wake_word in command.lower():
                 state = FridayState.ACTIVE
             if state == FridayState.ACTIVE:
-
                 if find_match(friday_music, command):
                     ai_song = separate_response(music_prompt)
                     response = play_music(ai_song)

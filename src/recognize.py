@@ -10,7 +10,7 @@ import tempfile
 import requests
 
 # Initialize Whisper model for offline transcription
-model = whisper.load_model("small")
+model = whisper.load_model("base")
 
 # Initialize Speech Recognition
 recognizer = sr.Recognizer()
