@@ -25,10 +25,10 @@ conversation_history = []
 # Initialize ChatOllama with the llama3.2 model
 #model = ChatOllama(model="llama3.2")
 
-#OR
+# OR
 # Initialize ChatOllama with the gemma2 model
-# model = ChatOllama(model="gemma2:2b")
-model = ChatOllama(model="dolphin3")
+model = ChatOllama(model="gemma2:2b")
+
 
 # Initialize conversation memory
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
