@@ -1,6 +1,7 @@
 from recognize import speak_text, listen_for_command
 import json
 from flask import Flask, render_template, jsonify, Response
+from flask_talisman import Talisman
 import threading
 import time
 import webbrowser
@@ -26,7 +27,8 @@ conversation_history = []
 
 #OR
 # Initialize ChatOllama with the gemma2 model
-model = ChatOllama(model="gemma2:2b")
+# model = ChatOllama(model="gemma2:2b")
+model = ChatOllama(model="dolphin3")
 
 # Initialize conversation memory
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
@@ -131,14 +133,6 @@ def ai_response(text):
     memory.chat_memory.add_user_message(text)
     memory.chat_memory.add_ai_message(ai_response_text)
     
-    # Speak the response
-    speak_text(ai_response_text)
-
-    # Check if the response contains a song mention
-    song_mention = re.search(r"playing (.+)", ai_response_text)
-    if song_mention:
-        song_title = song_mention.group(1)
-        play_music(song_title)
 
     return ai_response_text
 
@@ -179,7 +173,7 @@ def chat():
                 state = FridayState.ACTIVE
             if state == FridayState.ACTIVE:
                 if find_match(friday_music, command):
-                    ai_song = separate_response(music_prompt)
+                    ai_song = ai_response(music_prompt)
                     response = play_music(ai_song)
                     update_history(command, response)
                     state = FridayState.SLEEP
@@ -196,9 +190,9 @@ def chat():
                               has_forecast = True
                               break
                     if has_forecast:
-                         ai_response(command)
+                         speak_text(ai_response(command))
                     else:
-                         ai_response(command + weather_data)
+                         speak_text(ai_response(command + weather_data))
                 elif find_match(reminder_send, command):
                      message = separate_response(reminder + command)
                      speak_text(message)
@@ -208,9 +202,9 @@ def chat():
                     speak_text(message)
                     send_message(message)
                 elif find_match(start_sleep, command):
-                    ai_response(command)
+                    speak_text(ai_response(command))
                 else:
-                    ai_response(command)
+                    speak_text(ai_response(command))
         except Exception as e:
             print(f"Error during processing: {e}")
 
@@ -218,6 +212,9 @@ def main():
     """
     Main function to start the user interface with the backend
     """
+    # Initialize Flask-Talisman for security headers
+    Talisman(app, force_https=False)  # Set force_https=True in production
+
     # Start the Flask app in a separate thread
     threading.Thread(target=app.run, kwargs={'host': '0.0.0.0', 'port': 8000, 'debug': False}, daemon=True).start()
 
