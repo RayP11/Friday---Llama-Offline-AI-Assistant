@@ -1,11 +1,9 @@
 from recognize import speak_text, listen_for_command
 import json
 from flask import Flask, render_template, jsonify, Response
-from flask_talisman import Talisman
 import threading
 import time
 import webbrowser
-import re
 import socket
 from spotify_function import play_music
 from langchain.prompts import PromptTemplate
@@ -212,8 +210,6 @@ def main():
     """
     Main function to start the user interface with the backend
     """
-    # Initialize Flask-Talisman for security headers
-    Talisman(app, force_https=False)  # Set force_https=True in production
 
     # Start the Flask app in a separate thread
     threading.Thread(target=app.run, kwargs={'host': '0.0.0.0', 'port': 8000, 'debug': False}, daemon=True).start()
