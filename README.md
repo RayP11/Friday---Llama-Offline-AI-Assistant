@@ -91,9 +91,7 @@ Ask FRIDAY, *"What’s today’s forecast?"* and get instant updates:
 ---
 
 ## **Join the Revolution**
-FRIDAY represents the future of private, local AI. Clone the repo and experience the difference:
-
-**GitHub Repository:** [Coming Soon]  
+FRIDAY represents the future of private, local AI. Clone the repo and experience the difference: 
 
 **Contact:**  
 📧 RayPoulton11@yahoo.com  
